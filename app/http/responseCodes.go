@@ -42,11 +42,11 @@ func OK_FILE(body string) Response {
 	return response
 }
 
-func NOT_FOUND() Response {
+func CREATED() Response {
 	return Response{
 		Protocol:   "HTTP/1.1",
-		Status:     404,
-		StatusText: "Not Found",
+		Status:     201,
+		StatusText: "Created",
 	}
 }
 
@@ -67,4 +67,12 @@ func BAD_REQUEST(body string) Response {
 	}
 
 	return response
+}
+
+func NOT_FOUND() Response {
+	return Response{
+		Protocol:   "HTTP/1.1",
+		Status:     404,
+		StatusText: "Not Found",
+	}
 }

@@ -19,12 +19,16 @@ func ParseRequest(req string) Request {
 	lines := strings.Split(req, "\r\n")
 	if len(lines) > 0 {
 		firstLine := strings.Split(lines[0], " ")
-		//method = firstLine[0]
+		request.Method = firstLine[0]
 		request.Path = firstLine[1]
-		//protocol = firstLine[2]
+		request.Protocol = firstLine[2]
 		request.Headers = make(map[string]string)
-		for _, line := range lines[1:] {
+
+		n := 1
+
+		for i, line := range lines[1:] {
 			if line == "" {
+				n = i
 				break
 			}
 
@@ -33,6 +37,7 @@ func ParseRequest(req string) Request {
 			headerValue := strings.TrimSpace(header[1])
 			request.Headers[headerName] = headerValue
 		}
+		request.Body = strings.Join(lines[n:], "\n")
 	}
 	return request
 }

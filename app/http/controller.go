@@ -21,14 +21,17 @@ func root(directories []string, request Request) Response {
 	if len(directories) == 1 && directories[0] == "" {
 		return OK("")
 	} else if len(directories) >= 1 {
-		if directories[0] == "echo" {
+		if directories[0] == "echo" && request.Method == "GET" {
 			return echo(directories[1:])
 		}
-		if directories[0] == "user-agent" {
+		if directories[0] == "user-agent" && request.Method == "GET" {
 			return userAgent(request)
 		}
-		if directories[0] == "files" {
-			return files(directories[1:])
+		if directories[0] == "files" && request.Method == "GET" {
+			return getFiles(directories[1:])
+		}
+		if directories[0] == "files" && request.Method == "POST" {
+			return postFiles(directories[1:], request)
 		}
 	}
 	return NOT_FOUND()
@@ -51,7 +54,7 @@ func userAgent(request Request) Response {
 	return BAD_REQUEST("User-Agent not found")
 }
 
-func files(directories []string) Response {
+func getFiles(directories []string) Response {
 	if len(directories) >= 1 {
 		content, err := fileUtils.ReadFile(directories[0])
 		if err != nil {
@@ -61,4 +64,16 @@ func files(directories []string) Response {
 		return OK_FILE(content)
 	}
 	return NOT_FOUND()
+}
+
+func postFiles(directories []string, request Request) Response {
+	if len(directories) >= 1 {
+		err := fileUtils.WriteFile(directories[0], request.Body)
+		if err != nil {
+			fmt.Println(err)
+			return BAD_REQUEST("")
+		}
+		return CREATED()
+	}
+	return BAD_REQUEST("")
 }

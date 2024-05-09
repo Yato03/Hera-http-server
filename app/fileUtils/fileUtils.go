@@ -23,6 +23,19 @@ func ReadFile(relativePath string) (string, error) {
 	return string(file), nil
 }
 
+func WriteFile(relativePath string, content string) error {
+	path, err := getPathFromConfiguration()
+	if err != nil {
+		return err
+	}
+	absolutePath := path + "/" + relativePath
+	err = os.WriteFile(absolutePath, []byte(content), 0644)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func MakeConfigurationFile(path string) error {
 	file, err := os.Create(CONFIGURATION_FILE)
 	if err != nil {

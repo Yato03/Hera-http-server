@@ -4,7 +4,7 @@
 1. Run `./your_server.sh` to run your program, which is implemented in
    `app/server.go`.
 
-#Flags
+# Flags
 
 1. `--directory`: exposes the files in the given directory
 Example:

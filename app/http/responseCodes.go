@@ -1,14 +1,12 @@
-package responseCodes
+package http
 
 import (
 	"fmt"
-
-	"github.com/codecrafters-io/http-server-starter-go/app/types"
 )
 
-func OK(body string) types.Response {
+func OK(body string) Response {
 
-	response := types.Response{
+	response := Response{
 		Protocol:   "HTTP/1.1",
 		Status:     200,
 		StatusText: "OK",
@@ -26,8 +24,8 @@ func OK(body string) types.Response {
 	return response
 }
 
-func NOT_FOUND() types.Response {
-	return types.Response{
+func NOT_FOUND() Response {
+	return Response{
 		Protocol:   "HTTP/1.1",
 		Status:     404,
 		StatusText: "Not Found",

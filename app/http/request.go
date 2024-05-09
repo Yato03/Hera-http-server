@@ -37,7 +37,7 @@ func ParseRequest(req string) Request {
 			headerValue := strings.TrimSpace(header[1])
 			request.Headers[headerName] = headerValue
 		}
-		request.Body = strings.Join(lines[n:], "\n")
+		request.Body = strings.Join(lines[n:], "")
 	}
 	return request
 }

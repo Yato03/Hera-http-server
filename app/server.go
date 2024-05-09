@@ -8,6 +8,69 @@ import (
 	"strings"
 )
 
+type Request struct {
+	Method   string
+	Path     string
+	Protocol string
+	Headers  map[string]string
+	Body     string
+}
+
+type Response struct {
+	Protocol   string
+	Status     int
+	StatusText string
+}
+
+func OK() Response {
+	return Response{
+		Protocol:   "HTTP/1.1",
+		Status:     200,
+		StatusText: "OK",
+	}
+}
+
+func NOT_FOUND() Response {
+	return Response{
+		Protocol:   "HTTP/1.1",
+		Status:     404,
+		StatusText: "Not Found",
+	}
+}
+
+func parseRequest(req string) Request {
+
+	var request Request
+
+	lines := strings.Split(req, "\r\n")
+	if len(lines) > 0 {
+		firstLine := strings.Split(lines[0], " ")
+		//method = firstLine[0]
+		request.Path = firstLine[1]
+		//protocol = firstLine[2]
+		request.Headers = make(map[string]string)
+		for _, line := range lines[1:] {
+			if line == "" {
+				break
+			}
+
+			header := strings.SplitN(line, ":", 2)
+			headerName := strings.TrimSpace(header[0])
+			headerValue := strings.TrimSpace(header[1])
+			request.Headers[headerName] = headerValue
+		}
+	}
+	return request
+}
+
+func parseResponse(r Response) string {
+
+	response := fmt.Sprintf("%s %d %s\r\n\r\n", r.Protocol, r.Status, r.StatusText)
+
+	return response
+
+}
+
 func manageConnection(conn net.Conn) {
 
 	defer conn.Close()
@@ -21,42 +84,20 @@ func manageConnection(conn net.Conn) {
 
 	req := string(buffer[:size])
 
-	var _, path, _ string
-	lines := strings.Split(req, "\r\n")
-	if len(lines) > 0 {
-		firstLine := strings.Split(lines[0], " ")
-		//method = firstLine[0]
-		path = firstLine[1]
-		//protocol = firstLine[2]
-		fmt.Println(path)
-		headers := make(map[string]string)
-		for _, line := range lines[1:] {
-			if line == "" {
-				break
-			}
+	request := parseRequest(req)
 
-			header := strings.SplitN(line, ":", 2)
-			fmt.Println(header)
-			headerName := strings.TrimSpace(header[0])
-			headerValue := strings.TrimSpace(header[1])
-			headers[headerName] = headerValue
-		}
+	var response Response
 
-	}
-
-	OK := "HTTP/1.1 200 OK\r\n\r\n"
-	NOT_FOUND := "HTTP/1.1 404 Not Found\r\n\r\n"
-
-	var response string
-
-	if path == "/" {
-		response = OK
+	if request.Path == "/" {
+		response = OK()
 	} else {
-		response = NOT_FOUND
+		response = NOT_FOUND()
 	}
+
+	responseString := parseResponse(response)
 
 	writer := bufio.NewWriter(conn)
-	if _, err := writer.WriteString(response); err != nil {
+	if _, err := writer.WriteString(responseString); err != nil {
 		fmt.Println("Unable to send data")
 	}
 

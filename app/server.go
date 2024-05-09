@@ -2,10 +2,12 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"net"
 	"os"
 
+	"github.com/codecrafters-io/http-server-starter-go/app/fileUtils"
 	"github.com/codecrafters-io/http-server-starter-go/app/http"
 )
 
@@ -37,8 +39,21 @@ func handleConnection(conn net.Conn) {
 }
 
 func main() {
-	// You can use print statements as follows for debugging, they'll be visible when running tests.
-	fmt.Println("Logs from your program will appear here!")
+
+	// Arguments
+	var (
+		flDirectory = flag.String("directory", ".", "Directory to serve files from")
+	)
+
+	flag.Parse()
+
+	fmt.Println("Serving files from", *flDirectory)
+
+	if *flDirectory != "" {
+		fileUtils.MakeConfigurationFile(*flDirectory)
+	} else {
+		fileUtils.CleanConfiguration()
+	}
 
 	// Uncomment this block to pass the first stage¡
 	l, err := net.Listen("tcp", "0.0.0.0:4221")
@@ -47,6 +62,8 @@ func main() {
 		fmt.Println("Failed to bind to port 4221")
 		os.Exit(1)
 	}
+
+	fmt.Println("Listening on 0.0.0.0:4221")
 
 	var conn net.Conn
 

@@ -1,6 +1,11 @@
 package http
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+
+	"github.com/codecrafters-io/http-server-starter-go/app/fileUtils"
+)
 
 func Controller(request Request) Response {
 	var response Response
@@ -22,6 +27,9 @@ func root(directories []string, request Request) Response {
 		if directories[0] == "user-agent" {
 			return userAgent(request)
 		}
+		if directories[0] == "files" {
+			return files(directories[1:])
+		}
 	}
 	return NOT_FOUND()
 
@@ -41,4 +49,16 @@ func userAgent(request Request) Response {
 		return OK(request.Headers["User-Agent"])
 	}
 	return BAD_REQUEST("User-Agent not found")
+}
+
+func files(directories []string) Response {
+	if len(directories) >= 1 {
+		content, err := fileUtils.ReadFile(directories[0])
+		if err != nil {
+			fmt.Println(err)
+			return NOT_FOUND()
+		}
+		return OK(content)
+	}
+	return NOT_FOUND()
 }

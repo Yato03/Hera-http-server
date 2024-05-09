@@ -31,3 +31,22 @@ func NOT_FOUND() Response {
 		StatusText: "Not Found",
 	}
 }
+
+func BAD_REQUEST(body string) Response {
+	response := Response{
+		Protocol:   "HTTP/1.1",
+		Status:     400,
+		StatusText: "Bad Request",
+		Body:       body,
+	}
+
+	if body != "" {
+		contentLength := fmt.Sprintf("%d", len(body))
+		response.Headers = map[string]string{
+			"Content-Type":   "text/plain",
+			"Content-Length": contentLength,
+		}
+	}
+
+	return response
+}

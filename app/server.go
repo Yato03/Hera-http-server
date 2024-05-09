@@ -20,14 +20,28 @@ type Response struct {
 	Protocol   string
 	Status     int
 	StatusText string
+	Headers    map[string]string
+	Body       string
 }
 
-func OK() Response {
-	return Response{
+func OK(body string) Response {
+
+	response := Response{
 		Protocol:   "HTTP/1.1",
 		Status:     200,
 		StatusText: "OK",
+		Body:       body,
 	}
+
+	if body != "" {
+		contentLength := fmt.Sprintf("%d", len(body))
+		response.Headers = map[string]string{
+			"Content-Type":   "text/plain",
+			"Content-Length": contentLength,
+		}
+	}
+
+	return response
 }
 
 func NOT_FOUND() Response {
@@ -65,10 +79,56 @@ func parseRequest(req string) Request {
 
 func parseResponse(r Response) string {
 
-	response := fmt.Sprintf("%s %d %s\r\n\r\n", r.Protocol, r.Status, r.StatusText)
+	//First line of the response
+	response := fmt.Sprintf("%s %d %s\r\n", r.Protocol, r.Status, r.StatusText)
+
+	//Headers
+	for key, value := range r.Headers {
+		response += fmt.Sprintf("%s: %s\r\n", key, value)
+	}
+
+	//Empty line
+	response += "\r\n"
+
+	//Body
+	response += r.Body
+
+	//Empty line
+	response += "\r\n"
 
 	return response
 
+}
+
+func controller(request Request) Response {
+	var response Response
+
+	directories := strings.Split(request.Path, "/")
+
+	response = root(directories[1:])
+
+	return response
+}
+
+func root(directories []string) Response {
+	if len(directories) == 1 && directories[0] == "" {
+		return OK("")
+	} else if len(directories) >= 1 {
+		if directories[0] == "echo" {
+			return echo(directories[1:])
+		}
+	}
+	return NOT_FOUND()
+
+}
+
+func echo(directories []string) Response {
+	if len(directories) == 0 {
+		return OK("ECHO!!")
+	} else if len(directories) >= 1 {
+		return OK(directories[0])
+	}
+	return NOT_FOUND()
 }
 
 func manageConnection(conn net.Conn) {
@@ -86,13 +146,7 @@ func manageConnection(conn net.Conn) {
 
 	request := parseRequest(req)
 
-	var response Response
-
-	if request.Path == "/" {
-		response = OK()
-	} else {
-		response = NOT_FOUND()
-	}
+	response := controller(request)
 
 	responseString := parseResponse(response)
 

@@ -24,6 +24,24 @@ func OK(body string) Response {
 	return response
 }
 
+func OK_FILE(body string) Response {
+
+	contentLength := fmt.Sprintf("%d", len(body))
+
+	response := Response{
+		Protocol:   "HTTP/1.1",
+		Status:     200,
+		StatusText: "OK",
+		Body:       body,
+		Headers: map[string]string{
+			"Content-Type":   "application/octet-stream",
+			"Content-Length": contentLength,
+		},
+	}
+
+	return response
+}
+
 func NOT_FOUND() Response {
 	return Response{
 		Protocol:   "HTTP/1.1",

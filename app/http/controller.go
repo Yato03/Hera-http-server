@@ -58,7 +58,7 @@ func files(directories []string) Response {
 			fmt.Println(err)
 			return NOT_FOUND()
 		}
-		return OK(content)
+		return OK_FILE(content)
 	}
 	return NOT_FOUND()
 }

@@ -24,7 +24,7 @@ func ReadFile(relativePath string) (string, error) {
 }
 
 func MakeConfigurationFile(path string) error {
-	file, err := os.Create(path + "/" + CONFIGURATION_FILE)
+	file, err := os.Create(CONFIGURATION_FILE)
 	if err != nil {
 		return err
 	}

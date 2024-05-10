@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"compress/gzip"
 	"errors"
-	"fmt"
 	"os"
 	"strings"
 )
@@ -94,9 +93,6 @@ func Gzip(content string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
-	// Print the compressed data
-	fmt.Println("Compressed data:", buf.Bytes())
 
 	return buf.String(), nil
 

@@ -17,13 +17,6 @@ func OK(body string, request Request) Response {
 		Headers:    map[string]string{},
 	}
 
-	//Content-Length
-	if body != "" {
-		contentLength := fmt.Sprintf("%d", len(body))
-		response.Headers["Content-Type"] = "text/plain"
-		response.Headers["Content-Length"] = contentLength
-	}
-
 	//Accept-Encoding
 	if request.Headers["Accept-Encoding"] != "" {
 		encondings := strings.Split(request.Headers["Accept-Encoding"], ",")
@@ -38,6 +31,13 @@ func OK(body string, request Request) Response {
 				response.Body = encodedText
 			}
 		}
+	}
+
+	//Content-Length
+	if response.Body != "" {
+		contentLength := fmt.Sprintf("%d", len(response.Body)+2)
+		response.Headers["Content-Type"] = "text/plain"
+		response.Headers["Content-Length"] = contentLength
 	}
 
 	return response

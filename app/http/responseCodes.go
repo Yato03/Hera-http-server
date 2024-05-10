@@ -2,6 +2,7 @@ package http
 
 import (
 	"fmt"
+	"strings"
 )
 
 func OK(body string, request Request) Response {
@@ -22,9 +23,16 @@ func OK(body string, request Request) Response {
 	}
 
 	//Accept-Encoding
-	if request.Headers["Accept-Encoding"] != "" && request.Headers["Accept-Encoding"] == "gzip" {
-		response.Headers["Content-Encoding"] = "gzip"
-		//response.Body = Gzip(response.Body)
+	if request.Headers["Accept-Encoding"] != "" {
+
+		encondings := strings.Split(request.Headers["Accept-Encoding"], ",")
+
+		for _, encoding := range encondings {
+			if encoding == "gzip" {
+				response.Headers["Content-Encoding"] = "gzip"
+				//response.Body = Gzip(response.Body)
+			}
+		}
 	}
 
 	return response

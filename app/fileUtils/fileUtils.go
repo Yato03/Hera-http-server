@@ -1,7 +1,10 @@
 package fileUtils
 
 import (
+	"bytes"
+	"compress/gzip"
 	"errors"
+	"fmt"
 	"os"
 	"strings"
 )
@@ -71,4 +74,30 @@ func CleanConfiguration() error {
 		return err
 	}
 	return nil
+}
+
+func Gzip(content string) (string, error) {
+	var buf bytes.Buffer
+	zw := gzip.NewWriter(&buf)
+
+	// Setting the Header fields is optional.
+	zw.Name = "Encoded by gzip"
+	zw.Comment = "Encoded by Heras"
+
+	_, err := zw.Write([]byte(content))
+	if err != nil {
+		return "", err
+	}
+
+	// Make sure to close the gzip writer to flush any remaining data
+	err = zw.Close()
+	if err != nil {
+		return "", err
+	}
+
+	// Print the compressed data
+	fmt.Println("Compressed data:", buf.Bytes())
+
+	return buf.String(), nil
+
 }

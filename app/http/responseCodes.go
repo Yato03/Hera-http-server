@@ -3,6 +3,8 @@ package http
 import (
 	"fmt"
 	"strings"
+
+	"github.com/codecrafters-io/http-server-starter-go/app/fileUtils"
 )
 
 func OK(body string, request Request) Response {
@@ -29,7 +31,11 @@ func OK(body string, request Request) Response {
 		for _, encoding := range encondings {
 			if strings.TrimSpace(encoding) == "gzip" {
 				response.Headers["Content-Encoding"] = "gzip"
-				//response.Body = Gzip(response.Body)
+				encodedText, err := fileUtils.Gzip(response.Body)
+				if err != nil {
+					return BAD_REQUEST("Error compressing response")
+				}
+				response.Body = encodedText
 			}
 		}
 	}

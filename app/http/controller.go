@@ -19,10 +19,10 @@ func Controller(request Request) Response {
 
 func root(directories []string, request Request) Response {
 	if len(directories) == 1 && directories[0] == "" {
-		return OK("")
+		return OK("", request)
 	} else if len(directories) >= 1 {
 		if directories[0] == "echo" && request.Method == "GET" {
-			return echo(directories[1:])
+			return echo(directories[1:], request)
 		}
 		if directories[0] == "user-agent" && request.Method == "GET" {
 			return userAgent(request)
@@ -38,18 +38,18 @@ func root(directories []string, request Request) Response {
 
 }
 
-func echo(directories []string) Response {
+func echo(directories []string, request Request) Response {
 	if len(directories) == 0 {
-		return OK("ECHO!!")
+		return OK("ECHO!!", request)
 	} else if len(directories) >= 1 {
-		return OK(directories[0])
+		return OK(directories[0], request)
 	}
 	return NOT_FOUND()
 }
 
 func userAgent(request Request) Response {
 	if request.Headers["User-Agent"] != "" {
-		return OK(request.Headers["User-Agent"])
+		return OK(request.Headers["User-Agent"], request)
 	}
 	return BAD_REQUEST("User-Agent not found")
 }

@@ -4,21 +4,27 @@ import (
 	"fmt"
 )
 
-func OK(body string) Response {
+func OK(body string, request Request) Response {
 
 	response := Response{
 		Protocol:   "HTTP/1.1",
 		Status:     200,
 		StatusText: "OK",
 		Body:       body,
+		Headers:    map[string]string{},
 	}
 
+	//Content-Length
 	if body != "" {
 		contentLength := fmt.Sprintf("%d", len(body))
-		response.Headers = map[string]string{
-			"Content-Type":   "text/plain",
-			"Content-Length": contentLength,
-		}
+		response.Headers["Content-Type"] = "text/plain"
+		response.Headers["Content-Length"] = contentLength
+	}
+
+	//Accept-Encoding
+	if request.Headers["Accept-Encoding"] != "" && request.Headers["Accept-Encoding"] == "gzip" {
+		response.Headers["Content-Encoding"] = "gzip"
+		//response.Body = Gzip(response.Body)
 	}
 
 	return response

@@ -24,11 +24,10 @@ func OK(body string, request Request) Response {
 
 	//Accept-Encoding
 	if request.Headers["Accept-Encoding"] != "" {
-
 		encondings := strings.Split(request.Headers["Accept-Encoding"], ",")
 
 		for _, encoding := range encondings {
-			if encoding == "gzip" {
+			if strings.TrimSpace(encoding) == "gzip" {
 				response.Headers["Content-Encoding"] = "gzip"
 				//response.Body = Gzip(response.Body)
 			}

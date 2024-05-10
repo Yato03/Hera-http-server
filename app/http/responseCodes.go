@@ -35,7 +35,7 @@ func OK(body string, request Request) Response {
 
 	//Content-Length
 	if response.Body != "" {
-		contentLength := fmt.Sprintf("%d", len(response.Body)+2)
+		contentLength := fmt.Sprintf("%d", len(response.Body))
 		response.Headers["Content-Type"] = "text/plain"
 		response.Headers["Content-Length"] = contentLength
 	}

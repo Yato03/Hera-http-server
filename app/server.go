@@ -30,6 +30,8 @@ func handleConnection(conn net.Conn) {
 
 	responseString := http.ParseResponse(response)
 
+	fmt.Println(responseString)
+
 	writer := bufio.NewWriter(conn)
 	if _, err := writer.WriteString(responseString); err != nil {
 		fmt.Println("Unable to send data")

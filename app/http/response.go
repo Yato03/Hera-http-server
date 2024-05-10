@@ -27,7 +27,7 @@ func ParseResponse(r Response) string {
 	response += r.Body
 
 	//Empty line
-	response += "\r\n"
+	//response += "\r\n"
 
 	return response
 

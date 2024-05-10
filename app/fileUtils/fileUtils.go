@@ -79,10 +79,6 @@ func Gzip(content string) (string, error) {
 	var buf bytes.Buffer
 	zw := gzip.NewWriter(&buf)
 
-	// Setting the Header fields is optional.
-	zw.Name = "Encoded by gzip"
-	zw.Comment = "Encoded by Heras"
-
 	_, err := zw.Write([]byte(content))
 	if err != nil {
 		return "", err

@@ -32,9 +32,9 @@ def test_not_found(status):
 
 def get_file(status):
     status.status("get-file")
-    response = requests.get("http://localhost:4221/files/index.html")
+    response = requests.get("http://localhost:4221/files/file")
     check_condition(response.status_code == 200, "Status code is not 200")
-    check_condition("<h1>Hello</h1>" in response.text, "The response is not <h1>Hello</h1>")
+    check_condition("This is a file" in response.text, "The response is not 'This is a file'")
 
 def post_file(status):
     status.status("post-file")

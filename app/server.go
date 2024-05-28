@@ -11,7 +11,7 @@ import (
 	"github.com/codecrafters-io/http-server-starter-go/app/http"
 )
 
-func handleConnection(conn net.Conn) {
+func handleConnection(conn net.Conn, router *http.Router) {
 
 	defer conn.Close()
 
@@ -26,7 +26,7 @@ func handleConnection(conn net.Conn) {
 
 	request := http.ParseRequest(req)
 
-	response := http.Controller(request)
+	response := router.Handle(request)
 
 	responseString := http.ParseResponse(response)
 
@@ -67,6 +67,12 @@ func main() {
 
 	fmt.Println("Listening on 0.0.0.0:4221")
 
+	router := &http.Router{}
+
+	router.AddHandler(&http.HomeController{Path: "/", Method: "GET"})
+	router.AddHandler(&http.EchoController{Path: "/echo/", Method: "GET"})
+	router.AddHandler(&http.UserAgentController{Path: "/user-agent", Method: "GET"})
+
 	var conn net.Conn
 
 	for {
@@ -78,7 +84,7 @@ func main() {
 		}
 
 		//Accepted connection
-		go handleConnection(conn)
+		go handleConnection(conn, router)
 	}
 
 }

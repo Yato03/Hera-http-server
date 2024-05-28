@@ -15,5 +15,5 @@ func (r *Router) Handle(request Request) Response {
 			return res
 		}
 	}
-	return NOT_FOUND()
+	return NoBody(NOT_FOUND)
 }

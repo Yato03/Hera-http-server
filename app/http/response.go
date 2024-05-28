@@ -15,6 +15,15 @@ type Response struct {
 	Body       string
 }
 
+func NoBody(responseStatus ResponseStatus) Response {
+	return Response{
+		Protocol:   "HTTP/1.1",
+		Status:     responseStatus.StatusCode,
+		StatusText: responseStatus.StatusText,
+		Headers:    map[string]string{},
+	}
+}
+
 func TextPlain(body string, request Request, responseStatus ResponseStatus) Response {
 
 	response := Response{
@@ -34,7 +43,7 @@ func TextPlain(body string, request Request, responseStatus ResponseStatus) Resp
 				response.Headers["Content-Encoding"] = "gzip"
 				encodedText, err := fileUtils.Gzip(response.Body)
 				if err != nil {
-					return BAD_REQUEST("Error compressing response")
+					return TextPlain("Error compressing response", request, BAD_REQUEST)
 				}
 				response.Body = encodedText
 			}
@@ -55,7 +64,7 @@ func GetFile(path string) Response {
 	content, err := fileUtils.ReadFile(path)
 	if err != nil {
 		fmt.Println(err)
-		return NOT_FOUND()
+		return NoBody(NOT_FOUND)
 	}
 	contentLength := fmt.Sprintf("%d", len(content))
 
@@ -80,8 +89,8 @@ func UploadFile(path string, body string, responseStatus ResponseStatus) Respons
 		fmt.Println(err)
 		response = Response{
 			Protocol:   "HTTP/1.1",
-			Status:     BAD_REQUEST400.StatusCode,
-			StatusText: BAD_REQUEST400.StatusText,
+			Status:     BAD_REQUEST.StatusCode,
+			StatusText: BAD_REQUEST.StatusText,
 		}
 	} else {
 		response = Response{

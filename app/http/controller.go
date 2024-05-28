@@ -18,9 +18,9 @@ type HomeController struct {
 func (c *HomeController) Handle(request Request) (Response, bool) {
 	if request.Path == c.Path && request.Method == c.Method {
 		fmt.Println(request.Path)
-		return OK("", request), true
+		return NoBody(OK), true
 	}
-	return NOT_FOUND(), false
+	return NoBody(NOT_FOUND), false
 }
 
 // Path: GET /echo/{string}
@@ -32,9 +32,9 @@ type EchoController struct {
 func (c *EchoController) Handle(request Request) (Response, bool) {
 	if strings.HasPrefix(request.Path, c.Path) && request.Method == c.Method {
 		directories := strings.Split(request.Path, "/")
-		return TextPlain(directories[2], request, OK200), true
+		return TextPlain(directories[2], request, OK), true
 	}
-	return NOT_FOUND(), false
+	return NoBody(NOT_FOUND), false
 }
 
 // Path: GET /user-agent
@@ -45,9 +45,9 @@ type UserAgentController struct {
 
 func (c *UserAgentController) Handle(request Request) (Response, bool) {
 	if strings.HasPrefix(request.Path, c.Path) && request.Method == c.Method {
-		return OK(request.Headers["User-Agent"], request), true
+		return TextPlain(request.Headers["User-Agent"], request, OK), true
 	}
-	return NOT_FOUND(), false
+	return NoBody(NOT_FOUND), false
 }
 
 // Path: GET /files/{string}
@@ -61,7 +61,7 @@ func (c *GetFilesController) Handle(request Request) (Response, bool) {
 		directories := strings.Split(request.Path, "/")
 		return GetFile(directories[2]), true
 	}
-	return NOT_FOUND(), false
+	return NoBody(NOT_FOUND), false
 }
 
 // Path: POST /files/{string}
@@ -74,7 +74,7 @@ func (c *UploadFileController) Handle(request Request) (Response, bool) {
 	if strings.HasPrefix(request.Path, c.Path) && request.Method == c.Method {
 		directories := strings.Split(request.Path, "/")
 		fmt.Println(directories[2])
-		return UploadFile(directories[2], request.Body, CREATED201), true
+		return UploadFile(directories[2], request.Body, CREATED), true
 	}
-	return NOT_FOUND(), false
+	return NoBody(NOT_FOUND), false
 }

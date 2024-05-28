@@ -17,7 +17,6 @@ type HomeController struct {
 
 func (c *HomeController) Handle(request Request) (Response, bool) {
 	if request.Path == c.Path && request.Method == c.Method {
-		fmt.Println(request.Path)
 		return NoBody(OK), true
 	}
 	return NoBody(NOT_FOUND), false
@@ -75,6 +74,20 @@ func (c *UploadFileController) Handle(request Request) (Response, bool) {
 		directories := strings.Split(request.Path, "/")
 		fmt.Println(directories[2])
 		return UploadFile(directories[2], request.Body, CREATED), true
+	}
+	return NoBody(NOT_FOUND), false
+}
+
+// Path: GET /files/{string}
+type GetHTMLController struct {
+	Path   string
+	Method string
+}
+
+func (c *GetHTMLController) Handle(request Request) (Response, bool) {
+	if strings.HasPrefix(request.Path, c.Path) && request.Method == c.Method {
+		directories := strings.Split(request.Path, "/")
+		return GetHTML(directories[2]), true
 	}
 	return NoBody(NOT_FOUND), false
 }

@@ -13,7 +13,7 @@ const (
 )
 
 func ReadFile(relativePath string) (string, error) {
-	path, err := getPathFromConfiguration()
+	path, err := getDirectoryPathFromConfiguration()
 	if err != nil {
 		return "", err
 	}
@@ -26,7 +26,7 @@ func ReadFile(relativePath string) (string, error) {
 }
 
 func WriteFile(relativePath string, content string) error {
-	path, err := getPathFromConfiguration()
+	path, err := getDirectoryPathFromConfiguration()
 	if err != nil {
 		return err
 	}
@@ -38,33 +38,86 @@ func WriteFile(relativePath string, content string) error {
 	return nil
 }
 
-func MakeConfigurationFile(path string) error {
+func ReadHTML(relativePath string) (string, error) {
+	path, err := getContentPathFromConfiguration()
+	if err != nil {
+		return "", err
+	}
+	absolutePath := path + "/" + relativePath
+	file, err := os.ReadFile(absolutePath)
+	if err != nil {
+		return "", err
+	}
+	return string(file), nil
+}
+
+func MakeConfigurationFile(directoryPath string, contentPath string) error {
 	file, err := os.Create(CONFIGURATION_FILE)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
-	_, err = file.WriteString("path:" + path)
-	if err != nil {
-		return err
+	if directoryPath != "" {
+		_, err = file.WriteString("directory:" + directoryPath + "\n")
+		if err != nil {
+			return err
+		}
 	}
+
+	if contentPath != "" {
+		_, err = file.WriteString("content:" + contentPath)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
-func getPathFromConfiguration() (string, error) {
+func getConfiguration() (map[string]string, error) {
 	file, err := os.ReadFile(CONFIGURATION_FILE)
+	if err != nil {
+		return nil, err
+	}
+
+	lines := strings.Split(string(file), "\n")
+	configuration := make(map[string]string)
+
+	for _, line := range lines {
+		keyValue := strings.Split(line, ":")
+		if len(keyValue) == 2 {
+			configuration[keyValue[0]] = keyValue[1]
+		}
+	}
+
+	return configuration, nil
+}
+
+func getDirectoryPathFromConfiguration() (string, error) {
+	configuration, err := getConfiguration()
 	if err != nil {
 		return "", err
 	}
 
-	pathKeyValue := strings.Split(string(file), ":")
-
-	if len(pathKeyValue) != 2 {
-		return "", errors.New("INVALID CONFIGURATION FILE")
+	if configuration["directory"] == "" {
+		return "", errors.New("directory not found in configuration file")
 	}
 
-	return string(pathKeyValue[1]), nil
+	return configuration["directory"], nil
+}
+
+func getContentPathFromConfiguration() (string, error) {
+	configuration, err := getConfiguration()
+	if err != nil {
+		return "", err
+	}
+
+	if configuration["content"] == "" {
+		return "", errors.New("content not found in configuration file")
+	}
+
+	return configuration["content"], nil
 }
 
 func CleanConfiguration() error {

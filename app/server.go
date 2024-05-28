@@ -44,15 +44,17 @@ func main() {
 
 	// Arguments
 	var (
-		flDirectory = flag.String("directory", ".", "Directory to serve files from")
+		flDirectory     = flag.String("directory", "", "Directory to serve files from")
+		flSourceContent = flag.String("content", "", "Directory to serve html from")
 	)
 
 	flag.Parse()
 
 	fmt.Println("Serving files from", *flDirectory)
+	fmt.Println("Serving content from", *flSourceContent)
 
-	if *flDirectory != "" {
-		fileUtils.MakeConfigurationFile(*flDirectory)
+	if *flDirectory != "" || *flSourceContent != "" {
+		fileUtils.MakeConfigurationFile(*flDirectory, *flSourceContent)
 	} else {
 		fileUtils.CleanConfiguration()
 	}
@@ -67,13 +69,19 @@ func main() {
 
 	fmt.Println("Listening on 0.0.0.0:4221")
 
+	// Routes
 	router := &http.Router{}
 
 	router.AddHandler(&http.HomeController{Path: "/", Method: "GET"})
 	router.AddHandler(&http.EchoController{Path: "/echo/", Method: "GET"})
 	router.AddHandler(&http.UserAgentController{Path: "/user-agent", Method: "GET"})
-	router.AddHandler(&http.GetFilesController{Path: "/files", Method: "GET"})
-	router.AddHandler(&http.UploadFileController{Path: "/files", Method: "POST"})
+	if *flDirectory != "" {
+		router.AddHandler(&http.GetFilesController{Path: "/files", Method: "GET"})
+		router.AddHandler(&http.UploadFileController{Path: "/files", Method: "POST"})
+	}
+	if *flSourceContent != "" {
+		router.AddHandler(&http.GetHTMLController{Path: "/content", Method: "GET"})
+	}
 
 	var conn net.Conn
 

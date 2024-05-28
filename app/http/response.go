@@ -82,6 +82,28 @@ func GetFile(path string) Response {
 	return response
 }
 
+func GetHTML(path string) Response {
+	content, err := fileUtils.ReadHTML(path)
+	if err != nil {
+		fmt.Println(err)
+		return NoBody(NOT_FOUND)
+	}
+	contentLength := fmt.Sprintf("%d", len(content))
+
+	response := Response{
+		Protocol:   "HTTP/1.1",
+		Status:     200,
+		StatusText: "OK",
+		Body:       content,
+		Headers: map[string]string{
+			"Content-Type":   "text/html",
+			"Content-Length": contentLength,
+		},
+	}
+
+	return response
+}
+
 func UploadFile(path string, body string, responseStatus ResponseStatus) Response {
 	err := fileUtils.WriteFile(path, body)
 	var response Response
@@ -100,6 +122,18 @@ func UploadFile(path string, body string, responseStatus ResponseStatus) Respons
 		}
 	}
 	return response
+}
+
+func Redirection(location string) Response {
+	return Response{
+		Protocol:   "HTTP/1.1",
+		Status:     MOVED_PERMANENTLY.StatusCode,
+		StatusText: MOVED_PERMANENTLY.StatusText,
+		Headers: map[string]string{
+			"Location": location,
+		},
+	}
+
 }
 
 func ParseResponse(r Response) string {

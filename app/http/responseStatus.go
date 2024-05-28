@@ -14,7 +14,7 @@ type ResponseStatus struct {
 
 var OK200 = ResponseStatus{200, "OK"}
 var BAD_REQUEST400 = ResponseStatus{200, "OK"}
-var CREATED201 = ResponseStatus{201, "CREATED"}
+var CREATED201 = ResponseStatus{201, "Created"}
 
 func OK(body string, request Request) Response {
 

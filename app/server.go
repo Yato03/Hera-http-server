@@ -72,6 +72,8 @@ func main() {
 	router.AddHandler(&http.HomeController{Path: "/", Method: "GET"})
 	router.AddHandler(&http.EchoController{Path: "/echo/", Method: "GET"})
 	router.AddHandler(&http.UserAgentController{Path: "/user-agent", Method: "GET"})
+	router.AddHandler(&http.GetFilesController{Path: "/files", Method: "GET"})
+	router.AddHandler(&http.UploadFileController{Path: "/files", Method: "POST"})
 
 	var conn net.Conn
 

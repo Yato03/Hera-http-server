@@ -30,6 +30,17 @@ def test_not_found(status):
     response = requests.get("http://localhost:4221/not-found")
     check_condition(response.status_code == 404, "Status code is not 404")
 
+def get_file(status):
+    status.status("get-file")
+    response = requests.get("http://localhost:4221/files/index.html")
+    check_condition(response.status_code == 200, "Status code is not 200")
+    check_condition("<h1>Hello</h1>" in response.text, "The response is not <h1>Hello</h1>")
+
+def post_file(status):
+    status.status("post-file")
+    response = requests.post("http://localhost:4221/files/prueba", data="Hello")
+    check_condition(response.status_code == 201, "Status code is not 201")
+
 # Utils
 def check_server():
     try:
@@ -45,7 +56,7 @@ def check_condition(condition, message):
 
 # Run tests
 def run_tests():
-    tests = [test_user_agent, test_echo, test_not_found]
+    tests = [test_user_agent, test_echo, test_not_found, get_file, post_file]
     counter = 1
     total = len(tests)
     p = log.progress("Testing:")

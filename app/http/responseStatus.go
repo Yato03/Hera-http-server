@@ -7,6 +7,15 @@ import (
 	"github.com/codecrafters-io/http-server-starter-go/app/fileUtils"
 )
 
+type ResponseStatus struct {
+	StatusCode int
+	StatusText string
+}
+
+var OK200 = ResponseStatus{200, "OK"}
+var BAD_REQUEST400 = ResponseStatus{200, "OK"}
+var CREATED201 = ResponseStatus{201, "CREATED"}
+
 func OK(body string, request Request) Response {
 
 	response := Response{
